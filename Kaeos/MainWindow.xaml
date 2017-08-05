@@ -3,10 +3,186 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Kaeos"
+        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
+        Style="{StaticResource MainWindowStyle}"
+        Width="565" Height="651"
+        DataContext="{StaticResource ControlModule}"
+        Closing="MainWindow_OnClosing">
     <Grid>
-        
+        <StackPanel>
+
+            <!--
+            DateTime
+        -->
+            <Grid Background="#FF141414">
+                <DockPanel Margin="30,20">
+                    <TextBlock Text="{Binding Path=DateTimeModule.CurrentDateTime, Converter={StaticResource TimeFormatConverter}}" Foreground="#FFFFAE00" FontSize="22" FontFamily="Segoe UI Semilight" VerticalAlignment="Center" />
+                    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Right">
+                        <TextBlock Text="{Binding Path=DateTimeModule.CurrentDateTime, Converter={StaticResource DateFormatConverter}}" HorizontalAlignment="Right" Foreground="#B2FFFFFF" />
+                        <TextBlock Foreground="#66FFFFFF" HorizontalAlignment="Right" TextTrimming="CharacterEllipsis">
+                        <Run Text="{Binding Path=WeatherModule.LocationName, StringFormat='{}{0},', FallbackValue='No location set,'}" />
+                        <Run Text="{Binding Path=WeatherModule.Temp, StringFormat={}{0:0.0}}" />
+                        <Run Text="{Binding Path=AppConfigModule.WeatherModule_UnitFormat.Symbol, StringFormat={}{0} ~}"/>
+                        <Run Text="{Binding Path=WeatherModule.Description, TargetNullValue='condition n/a'}" />
+                        </TextBlock>
+                    </StackPanel>
+                </DockPanel>
+
+                <ToggleButton x:Name="AppConfigButton" Content="M" Height="20" Width="20" HorizontalAlignment="Left" VerticalAlignment="Top" IsChecked="False" WindowChrome.IsHitTestVisibleInChrome="True" />
+                <Button Content="X" Height="20" Width="20" HorizontalAlignment="Right" VerticalAlignment="Top" WindowChrome.IsHitTestVisibleInChrome="True" />
+            </Grid>
+
+            <!--
+            Hardware
+        -->
+            <StackPanel Background="#FF272727">
+
+                <!-- Motherboard -->
+                <TextBlock Style="{StaticResource HardwareMotherboardNameTextBlockStyle}" Text="{Binding Path=HardwareModule.MonitoredHardware.MotherboardName, FallbackValue='Motherboard Name'}" />
+
+                <Grid Margin="20">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <!-- CPU -->
+                    <ItemsControl ItemsSource="{Binding Path=HardwareModule.MonitoredHardware.Cpus}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel>
+                                    <TextBlock Style="{StaticResource HardwareNameTextBlockStyle}" Text="{Binding Path=Name, FallbackValue='CPU Name'}" />
+                                    <ProgressBar Style="{StaticResource HardwareValueProgressBarStyle}" Value="{Binding Path=Load}" />
+                                    <DockPanel>
+                                        <TextBlock Style="{StaticResource HardwareValueTextBlockStyle}" Text="{Binding Path=Load, StringFormat={}{0:0}%, FallbackValue=n/a}" />
+                                        <TextBlock Style="{StaticResource HardwareValueTextBlockStyle}" HorizontalAlignment="Right" Text="{Binding Path=Temperature, StringFormat={}{0:0}°C, FallbackValue=n/a}" Foreground="{Binding Path=Temperature, Converter={StaticResource ValueGreaterThanToColorConverter}}" />
+                                    </DockPanel>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+
+                    <Rectangle Grid.Column="1" Width="1" Fill="#33FFFFFF" Margin="15,-4" />
+
+                    <!-- GPU -->
+                    <ItemsControl Grid.Column="2" ItemsSource="{Binding Path=HardwareModule.MonitoredHardware.GpuNvidias}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel>
+                                    <TextBlock Style="{StaticResource HardwareNameTextBlockStyle}" Text="{Binding Path=Name, FallbackValue='GPU Name'}" />
+                                    <ProgressBar Style="{StaticResource HardwareValueProgressBarStyle}" Value="{Binding Path=Load}" />
+                                    <DockPanel>
+                                        <TextBlock Style="{StaticResource HardwareValueTextBlockStyle}" Text="{Binding Path=Load, StringFormat={}{0:0}%, FallbackValue=n/a}" />
+                                        <TextBlock Style="{StaticResource HardwareValueTextBlockStyle}" HorizontalAlignment="Right" Text="{Binding Path=Temperature, StringFormat={}{0:0}°C, FallbackValue=n/a}" Foreground="{Binding Path=Temperature, Converter={StaticResource ValueGreaterThanToColorConverter}}" />
+                                    </DockPanel>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+
+                    <Rectangle Grid.Column="3" Width="1" Fill="#33FFFFFF" Margin="15,-4" />
+
+                    <!-- RAM -->
+                    <ItemsControl Grid.Column="4" ItemsSource="{Binding Path=HardwareModule.MonitoredHardware.Rams}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel>
+                                    <TextBlock Style="{StaticResource HardwareNameTextBlockStyle}" Text="{Binding Path=Name, FallbackValue='RAM Name'}" />
+                                    <ProgressBar Style="{StaticResource HardwareValueProgressBarStyle}" Value="{Binding Path=Load}" />
+                                    <TextBlock Style="{StaticResource HardwareValueTextBlockStyle}" Text="{Binding Path=Load, StringFormat={}{0:0}%, FallbackValue=n/a}" HorizontalAlignment="Center" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+
+                </Grid>
+            </StackPanel>
+
+            <!--
+            Network
+        -->
+            <Grid Background="#FF272727" Margin="0,1.4,0,0">
+                <Grid Margin="15">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    
+                    <DockPanel>
+                        <TextBlock Text="DOWNLOAD" Foreground="#19FFFFFF" />
+                        <TextBlock Text="{Binding Path=NetworkModule.NetworkBytesRecieved, Converter={StaticResource BytesToSuffixConverter}}" Foreground="White" HorizontalAlignment="Right" />
+                    </DockPanel>
+
+                    <Rectangle Grid.Column="1" Width="1" Fill="#33FFFFFF" Margin="15,-4" />
+
+                    <DockPanel Grid.Column="2">
+                        <TextBlock Text="{Binding Path=NetworkModule.NetworkBytesSent, Converter={StaticResource BytesToSuffixConverter}}" Foreground="White" />
+                        <TextBlock Text="UPLOAD" Foreground="#19FFFFFF" HorizontalAlignment="Right" />
+                    </DockPanel>
+                </Grid>
+            </Grid>
+
+            <Grid>
+                <StackPanel>
+                    <TextBlock Text="{Binding Path=VolumeMixerModule.MasterDeviceName}" Foreground="White" />
+                    <ProgressBar Value="{Binding Path=VolumeMixerModule.MasterAudioPeak}" Height="2" />
+                    <Slider Value="{Binding Path=VolumeMixerModule.MasterAudioLevel, Mode=TwoWay}" Minimum="0" Maximum="1" />
+                    <ToggleButton IsChecked="{Binding Path=VolumeMixerModule.MasterAudioIsMuted, Mode=TwoWay}">
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="Checked">
+                                <i:InvokeCommandAction Command="{Binding Path=VolumeMixerModule.SetMasterAudioVolumeCmd}" CommandParameter="True" />
+                            </i:EventTrigger>
+                            <i:EventTrigger EventName="Unchecked">
+                                <i:InvokeCommandAction Command="{Binding Path=VolumeMixerModule.SetMasterAudioVolumeCmd}" CommandParameter="False" />
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
+                    </ToggleButton>
+                </StackPanel>
+            </Grid>
+            
+        </StackPanel>
+
+        <VirtualizingStackPanel Background="#E5141414" Margin="0,20,0,0" Visibility="{Binding ElementName=AppConfigButton, Path=IsChecked, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <VirtualizingStackPanel Margin="30">
+
+                <TextBlock Text="Date and Time" Foreground="#FFE29A00" FontSize="16" FontFamily="Segoe UI Semilight" Margin="0,12,0,8" />
+                
+                <TextBlock Text="Date format:" Foreground="#B2FFFFFF" />
+                <ComboBox Margin="0,0,0,8" ItemsSource="{Binding Path=DateTimeModule.DateFormatCollection}"
+                          SelectedValue="{Binding Path=AppConfigModule.DateTimeModule_DateFormat, Mode=TwoWay}"
+                          SelectedItem="{Binding Path=AppConfigModule.DateTimeModule_DateFormat, Mode=TwoWay}"
+                          DisplayMemberPath="FriendlyView" Text="{Binding Path=AppConfigModule.DateTimeModule_DateFormat.FriendlyView}" />
+                
+                <TextBlock Text="Time format:" Foreground="#B2FFFFFF" />
+                <ComboBox Margin="0,0,0,8" ItemsSource="{Binding Path=DateTimeModule.TimeFormatCollection}"
+                          SelectedValue="{Binding Path=AppConfigModule.DateTimeModule_TimeFormat, Mode=TwoWay}"
+                          SelectedItem="{Binding Path=AppConfigModule.DateTimeModule_TimeFormat, Mode=TwoWay}"
+                          DisplayMemberPath="FriendlyView" Text="{Binding Path=AppConfigModule.DateTimeModule_TimeFormat.FriendlyView}" />
+
+                <TextBlock Text="Weather" Foreground="#FFE29A00" FontSize="16" FontFamily="Segoe UI Semilight" Margin="0,12,0,8" />
+
+                <TextBlock Text="Location:" Foreground="#B2FFFFFF" />
+                <Grid Margin="0,0,0,8">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBox Text="{Binding Path=WeatherModule.GeoLocation, Mode=TwoWay}" Padding="4,2" />
+                    <Button Grid.Column="1" Content="Get Location" Command="{Binding Path=WeatherModule.GetGeoLocationCmd}" Padding="8,0" Margin="10,0,0,0" />
+                </Grid>
+
+                <TextBlock Text="Unit format:" Foreground="#B2FFFFFF" />
+                <ComboBox Margin="0,0,0,8" ItemsSource="{Binding Path=WeatherModule.UnitFormatCollection}"
+                          SelectedValue="{Binding Path=AppConfigModule.WeatherModule_UnitFormat, Mode=TwoWay}"
+                          SelectedItem="{Binding Path=AppConfigModule.WeatherModule_UnitFormat, Mode=TwoWay}"
+                          DisplayMemberPath="Unit" Text="{Binding Path=AppConfigModule.WeatherModule_UnitFormat.Unit}" />
+
+            </VirtualizingStackPanel>
+        </VirtualizingStackPanel>
     </Grid>
 </Window>

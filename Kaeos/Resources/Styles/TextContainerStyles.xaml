@@ -1,0 +1,19 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Style x:Key="HardwareNameTextBlockStyle" TargetType="{x:Type TextBlock}">
+        <Setter Property="Foreground" Value="#FFE29A00" />
+        <Setter Property="HorizontalAlignment" Value="Center" />
+    </Style>
+
+    <Style x:Key="HardwareValueTextBlockStyle" TargetType="{x:Type TextBlock}">
+        <Setter Property="Foreground" Value="#FFFFFFFF" />
+    </Style>
+
+    <Style x:Key="HardwareMotherboardNameTextBlockStyle" TargetType="{x:Type TextBlock}">
+        <Setter Property="Foreground" Value="#33FFFFFF" />
+        <Setter Property="Margin" Value="0,15,0,-5" />
+        <Setter Property="HorizontalAlignment" Value="Center" />
+    </Style>
+
+</ResourceDictionary>
